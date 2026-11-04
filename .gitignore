@@ -1,0 +1,17 @@
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Backend
+backend/.venv/
+backend/.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Frontend (see frontend/.gitignore for the rest)
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
