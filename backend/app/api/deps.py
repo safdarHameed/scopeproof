@@ -9,8 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.security import decode_access_token
 from app.db.session import get_db
+from app.models.project import Project
 from app.models.user import User
-from app.services import user_service
+from app.services import project_service, user_service
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_PREFIX}/auth/login")
 
@@ -36,3 +37,13 @@ async def get_current_user(db: DbSession, token: Annotated[str, Depends(oauth2_s
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+async def get_project(project_id: uuid.UUID, db: DbSession, current_user: CurrentUser) -> Project:
+    project = await project_service.get_for_owner(db, project_id, current_user.id)
+    if project is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Project not found")
+    return project
+
+
+ProjectDep = Annotated[Project, Depends(get_project)]

@@ -15,3 +15,6 @@ __pycache__/
 frontend/node_modules/
 frontend/.next/
 frontend/.env.local
+
+# Uploaded documents
+backend/storage/

@@ -18,6 +18,20 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    # Public URL of the web app (used for links that point back into the UI).
+    FRONTEND_URL: str = "http://localhost:3000"
+
+    # Document uploads
+    UPLOAD_DIR: str = "storage/uploads"
+    MAX_UPLOAD_MB: int = 25  # per uploaded file (a ZIP counts as one file)
+    MAX_ZIP_ENTRIES: int = 200
+    MAX_EXTRACTED_MB: int = 50  # total uncompressed size allowed from one ZIP
+
+    # Pluggable engines. The placeholders keep the flow working until the real
+    # implementations land. See app/services/analysis and app/services/payments.
+    ANALYZER: str = "placeholder"  # "placeholder" | "rag"
+    PAYMENT_PROVIDER: str = "placeholder"  # "placeholder" | "paypal"
+
     CORS_ORIGINS: Annotated[list[str], NoDecode] = ["http://localhost:3000"]
 
     @field_validator("CORS_ORIGINS", mode="before")
