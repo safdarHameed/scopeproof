@@ -1,0 +1,6 @@
+simulation: scopeproof-rag
+routing: path
+mocks:
+  - name: astropods
+    routeKey: astropods
+    path: ../mocks/astropods/config.yaml

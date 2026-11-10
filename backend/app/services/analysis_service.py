@@ -55,6 +55,7 @@ async def run(db: AsyncSession, project: Project) -> AnalysisRun:
         project_id=project.id,
         engine=analyzer.name,
         status="running",
+        created_at=datetime.now(UTC),
         document_count=len(documents),
     )
     db.add(analysis)

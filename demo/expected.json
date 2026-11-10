@@ -1,0 +1,29 @@
+{
+  "project": {
+    "name": "Northstar website",
+    "currency": "EUR",
+    "client_name": "Maya Chen",
+    "client_email": "maya@northstar.example"
+  },
+  "website": {
+    "clear_items": {
+      "Website launch": "600.00",
+      "Authentication": "200.00",
+      "Analytics": "80.00"
+    },
+    "flagged_items": {
+      "Dark theme": [
+        "missing_approval",
+        "not_ready"
+      ]
+    },
+    "excluded_topics": [
+      "Future mobile app"
+    ],
+    "expected_total_after_review": "880.00"
+  },
+  "insufficient": {
+    "no_clear_items": true,
+    "expected_total_after_review": "0.00"
+  }
+}

@@ -1,0 +1,30 @@
+purpose:
+  stands_in_for: Astropods chat completions and embeddings protocol
+  unblocks: Local SDK and RAG orchestration checks without spending credits
+assumptions:
+  - id: local-sdk-behavior
+    status: supported
+    claim: The real SDK and analyzer handle the canned success and HTTP 403 scenarios.
+    reason: The pipeline returned a grounded EUR 200 suggestion and a sanitized access error.
+    verification: Ran scripts.check_gateway_simulation; request events confirmed both endpoints ran.
+    source: backend/scripts/check_gateway_simulation.py
+    updated_at: "2026-11-10"
+  - id: sdk-protocol
+    status: unknown
+    claim: The selected gateway models accept the configured SDK requests.
+    reason: Official documentation describes compatibility, but live access returned 403.
+    verification: Local fixture exercises canned JSON responses; live model accuracy remains unverified.
+    source: https://docs.astropods.com/ai-gateway/chat
+    updated_at: "2026-11-10"
+  - id: old-credential
+    status: contradicted
+    claim: The existing Bank Insights credential currently authorizes analysis calls.
+    reason: A live smoke request returned HTTP 403; the cause has not been established.
+    verification: Tested a minimal work-items request, without exposing credentials.
+    source: docs/RAG.md
+    updated_at: "2026-11-10"
+fingerprints:
+  - id: local-protocol-fixture
+    date: "2026-11-10"
+    commit: c3d9627c
+    cli: 1.75.0

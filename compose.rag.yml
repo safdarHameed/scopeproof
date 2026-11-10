@@ -1,0 +1,17 @@
+# docker compose -f docker-compose.yml -f compose.rag.yml up --build -d
+services:
+  backend:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://scopeproof:scopeproof@db:5432/scopeproof
+      ANALYZER: rag
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - uploads:/app/storage/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  uploads:

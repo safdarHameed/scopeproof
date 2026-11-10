@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Annotated
 
-from pydantic import field_validator
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
@@ -30,6 +30,16 @@ class Settings(BaseSettings):
     # Pluggable engines. The placeholders keep the flow working until the real
     # implementations land. See app/services/analysis and app/services/payments.
     ANALYZER: str = "placeholder"  # "placeholder" | "rag"
+    ASTRO_GATEWAY_URL: str = ""
+    ASTRO_GATEWAY_API_KEY: SecretStr = SecretStr("")
+    RAG_MODEL: str = "gpt-5-6-luna"
+    RAG_EMBEDDING_MODEL: str = "titan-embed-text-v2"
+    RAG_TOP_K: int = 32
+    RAG_MAX_CHUNKS: int = 150
+    RAG_MAX_ITEMS: int = 20
+    RAG_REQUEST_TIMEOUT_SECONDS: float = 45
+    RAG_TOTAL_TIMEOUT_SECONDS: float = 240
+
     PAYMENT_PROVIDER: str = "placeholder"  # "placeholder" | "paypal"
 
     CORS_ORIGINS: Annotated[list[str], NoDecode] = ["http://localhost:3000"]

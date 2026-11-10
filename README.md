@@ -6,8 +6,8 @@ invoice line items that link back to their sources. When something is unclear or
 it flags the item for review instead of making up a price.
 
 > **Status:** the full flow works end to end: projects → ZIP/.eml upload → analysis → review → invoice →
-> send → payment tracking. Analysis and payments currently run on **placeholder engines** behind
-> clean interfaces; the RAG engine and PayPal plug in without UI or API changes (see
+> send → payment tracking. Payments default to a **placeholder engine**. RAG is available through Astropods
+> behind the existing interface; gateway access and live-model quality still need qualification (see
 > [Integration points](#integration-points-rag--paypal)).
 
 ## Stack
@@ -129,6 +129,8 @@ Both engines are selected in `backend/.env` and only need to implement one small
 
 **RAG analyzer**: `ANALYZER=rag`
 
+Implemented in this branch using Astropods AI Gateway. See [setup, demo and verification](docs/RAG.md). Live access still needs a valid gateway credential.
+
 - Interface and data types: `backend/app/services/analysis/base.py` (`Analyzer`, `SourceDocument`,
   `ItemSuggestion`, `EvidenceSuggestion`, `Flag`, flag codes, evidence roles).
 - Input: the project's processed documents with text, author, recipients and date.
@@ -175,7 +177,8 @@ npm run build
 - [x] Document upload and ingestion (ZIP, .eml with authors/dates/threading, PDF, text)
 - [x] Review queue: evidence quotes, flags, edit / approve / exclude, manual items
 - [x] Invoice draft → confirm → send → payment tracking (placeholder provider)
-- [ ] RAG analyzer: chunking + embeddings in Postgres (`pgvector`), extraction with citations
+- [x] RAG analyzer: project-local chunking, gateway embeddings, retrieval and validated citations
+- [ ] Qualify live-model results against demo fixtures; persistent pgvector indexing
 - [ ] PayPal sandbox provider + payment webhooks
 - [ ] Gmail sync instead of ZIP upload
 
