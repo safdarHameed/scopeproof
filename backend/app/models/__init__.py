@@ -6,6 +6,7 @@ from app.models.document import Document
 from app.models.invoice import Invoice, InvoiceLine
 from app.models.project import Project
 from app.models.user import User
+from app.models.webhook import WebhookEvent, WebhookEventStatus
 
 __all__ = [
     "AnalysisRun",
@@ -17,4 +18,6 @@ __all__ = [
     "InvoiceLine",
     "Project",
     "User",
+    "WebhookEvent",
+    "WebhookEventStatus",
 ]

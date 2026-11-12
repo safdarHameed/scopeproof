@@ -7,7 +7,8 @@ def get_payment_provider() -> PaymentProvider:
         from app.services.payments.placeholder import PlaceholderPaymentProvider
 
         return PlaceholderPaymentProvider()
-    # if settings.PAYMENT_PROVIDER == "paypal":
-    #     from app.services.payments.paypal import PayPalProvider
-    #     return PayPalProvider()
+    if settings.PAYMENT_PROVIDER == "paypal":
+        from app.services.payments.paypal import PayPalProvider
+
+        return PayPalProvider()
     raise RuntimeError(f"Unknown PAYMENT_PROVIDER '{settings.PAYMENT_PROVIDER}'")

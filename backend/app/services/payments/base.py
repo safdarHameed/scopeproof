@@ -51,6 +51,12 @@ class PaymentProvider(Protocol):
     name: str
     label: str  # shown in the UI, e.g. "PayPal sandbox"
 
+    async def create_draft(
+        self, invoice: Invoice, project: Project, sender: User
+    ) -> ProviderInvoice:
+        """Create draft invoice at the provider without sending."""
+        ...
+
     async def send_invoice(
         self, invoice: Invoice, project: Project, sender: User
     ) -> ProviderInvoice:

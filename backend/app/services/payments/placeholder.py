@@ -14,12 +14,18 @@ class PlaceholderPaymentProvider:
     name = "placeholder"
     label = "Not connected (PayPal coming soon)"
 
-    async def send_invoice(
+    async def create_draft(
         self, invoice: Invoice, project: Project, sender: User
     ) -> ProviderInvoice:
         return ProviderInvoice(
-            provider_invoice_id=f"LOCAL-{secrets.token_urlsafe(12)}", status="SENT"
+            provider_invoice_id=f"LOCAL-{secrets.token_urlsafe(12)}", status="DRAFT"
         )
+
+    async def send_invoice(
+        self, invoice: Invoice, project: Project, sender: User
+    ) -> ProviderInvoice:
+        provider_id = invoice.provider_invoice_id or f"LOCAL-{secrets.token_urlsafe(12)}"
+        return ProviderInvoice(provider_invoice_id=provider_id, status="SENT")
 
     async def get_status(self, invoice: Invoice) -> ProviderInvoice:
         if not invoice.provider_invoice_id:
