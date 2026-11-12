@@ -46,8 +46,15 @@ def extract_paid_at(data: dict) -> datetime | None:
     return None
 
 
-def build_invoice_payload(invoice: Invoice, project: Project, sender: User) -> dict:
-    """Build the official PayPal Invoicing v2 draft payload from confirmed invoice."""
+def build_invoice_payload(
+    invoice: Invoice, project: Project, sender: User, invoicer_email: str | None = None
+) -> dict:
+    """Build the official PayPal Invoicing v2 draft payload from confirmed invoice.
+
+    invoicer_email: the email of the PayPal business account owning the REST API
+    credentials. When omitted the sender's login email is used, which may be rejected
+    by PayPal if it does not match the sandbox app's business account.
+    """
     if not invoice.lines:
         raise PaymentProviderError("Cannot create a PayPal invoice with no line items.")
 
@@ -102,11 +109,16 @@ def build_invoice_payload(invoice: Invoice, project: Project, sender: User) -> d
     given_name = invoicer_name_parts[0]
     surname = invoicer_name_parts[1] if len(invoicer_name_parts) > 1 else ""
 
+    # Use PAYPAL_INVOICER_EMAIL if provided, otherwise fall back to the sender's email.
+    # PayPal requires the invoicer email to match the business account associated with
+    # the REST API credentials. These may differ from the freelancer's app login email.
+    resolved_invoicer_email = (invoicer_email or "").strip() or sender.email
+
     invoicer: dict = {
         "name": {
             "given_name": given_name,
         },
-        "email_address": sender.email,
+        "email_address": resolved_invoicer_email,
     }
     if surname:
         invoicer["name"]["surname"] = surname
@@ -313,7 +325,9 @@ class PayPalProvider:
                         paid_at=extract_paid_at(data),
                     )
 
-            payload = build_invoice_payload(invoice, project, sender)
+            payload = build_invoice_payload(
+                invoice, project, sender, invoicer_email=settings.PAYPAL_INVOICER_EMAIL
+            )
             headers = {
                 "PayPal-Request-Id": f"create-{invoice.id}",
                 "Prefer": "return=representation",

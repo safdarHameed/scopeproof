@@ -217,6 +217,33 @@ def test_missing_client_info(test_invoice, test_project, test_user):
 
 
 # -------------------------------------------------------------------------
+# 5b. PAYPAL_INVOICER_EMAIL overrides sender email in payload
+# -------------------------------------------------------------------------
+def test_invoicer_email_override(test_invoice, test_project, test_user):
+    """PAYPAL_INVOICER_EMAIL must be used as invoicer email, not the sender's login email."""
+    from app.services.payments.paypal import build_invoice_payload
+
+    # Without override — sender email used
+    payload_no_override = build_invoice_payload(test_invoice, test_project, test_user)
+    assert payload_no_override["invoicer"]["email_address"] == test_user.email
+
+    # With an explicit invoicer_email — that email is used instead
+    business_email = "sb-seller123@business.example.com"
+    payload_with_override = build_invoice_payload(
+        test_invoice, test_project, test_user, invoicer_email=business_email
+    )
+    assert payload_with_override["invoicer"]["email_address"] == business_email
+    # The sender's email must NOT appear as the invoicer email when overridden
+    assert payload_with_override["invoicer"]["email_address"] != test_user.email
+
+    # Whitespace-only override falls back to sender email
+    payload_blank = build_invoice_payload(
+        test_invoice, test_project, test_user, invoicer_email="   "
+    )
+    assert payload_blank["invoicer"]["email_address"] == test_user.email
+
+
+# -------------------------------------------------------------------------
 # 6. Draft creation and invoice sending (separate operations)
 #    Asserts Prefer: return=representation on the POST /v2/invoicing/invoices
 # -------------------------------------------------------------------------
