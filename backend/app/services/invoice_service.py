@@ -37,6 +37,13 @@ async def list_for_project(db: AsyncSession, project_id: uuid.UUID) -> list[Invo
     return list(result.scalars())
 
 
+async def get_by_provider_invoice_id(db: AsyncSession, provider_invoice_id: str) -> Invoice | None:
+    result = await db.execute(
+        select(Invoice).where(Invoice.provider_invoice_id == provider_invoice_id)
+    )
+    return result.scalar_one_or_none()
+
+
 async def ensure_unlocked(db: AsyncSession, project_id: uuid.UUID) -> None:
     invoice = await get_active(db, project_id)
     if invoice is not None:
@@ -123,6 +130,19 @@ async def send(db: AsyncSession, invoice: Invoice, project: Project, sender: Use
     if invoice.status != InvoiceStatus.CONFIRMED:
         raise InvoiceError("This invoice has already been sent.")
     provider = get_payment_provider()
+
+    # Persist draft ID before sending if not already created at provider
+    if not invoice.provider_invoice_id and hasattr(provider, "create_draft"):
+        try:
+            draft = await provider.create_draft(invoice, project, sender)
+        except PaymentProviderError as exc:
+            raise InvoiceError(f"{provider.label}: {exc}") from exc
+        invoice.provider = provider.name
+        invoice.provider_invoice_id = draft.provider_invoice_id
+        invoice.provider_status = draft.status
+        await db.commit()
+        await db.refresh(invoice)
+
     try:
         result = await provider.send_invoice(invoice, project, sender)
     except PaymentProviderError as exc:

@@ -41,6 +41,24 @@ class Settings(BaseSettings):
     RAG_TOTAL_TIMEOUT_SECONDS: float = 240
 
     PAYMENT_PROVIDER: str = "placeholder"  # "placeholder" | "paypal"
+    PAYPAL_CLIENT_ID: str = ""
+    PAYPAL_CLIENT_SECRET: SecretStr = SecretStr("")
+    PAYPAL_BASE_URL: str = "https://api-m.sandbox.paypal.com"
+    PAYPAL_WEBHOOK_ID: str = ""
+    # The email address of the Sandbox business account associated with the REST API
+    # application credentials (PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET). This is NOT
+    # the freelancer's login email — it is the email that PayPal uses to identify the
+    # invoicing business account. Leave blank to use the logged-in freelancer's email
+    # (which may be rejected by PayPal if it differs from the API app owner).
+    PAYPAL_INVOICER_EMAIL: str = ""
+
+    @field_validator("PAYPAL_BASE_URL")
+    @classmethod
+    def validate_paypal_base_url(cls, v: str) -> str:
+        url = v.strip().rstrip("/")
+        if "api-m.paypal.com" in url and "sandbox" not in url:
+            raise ValueError("Live PayPal API is prohibited in this sandbox integration.")
+        return url
 
     CORS_ORIGINS: Annotated[list[str], NoDecode] = ["http://localhost:3000"]
 
